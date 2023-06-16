@@ -1,8 +1,9 @@
 import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
 import Notiflix from 'notiflix';
+import './sass/_common.scss';
 import SlimSelect from 'slim-select';
 import 'notiflix/dist/notiflix-3.2.6.min.css';
-// import 'modern-normalize/modern-normalize.css';
+import 'modern-normalize/modern-normalize.css';
 import '../node_modules/slim-select/dist/slimselect.css'
 
 
