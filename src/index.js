@@ -3,8 +3,7 @@ import Notiflix from 'notiflix';
 import SlimSelect from 'slim-select';
 import 'notiflix/dist/notiflix-3.2.6.min.css';
 import 'modern-normalize/modern-normalize.css';
-import '../node_modules/slim-select/dist/slimselect.css'
-
+import '../node_modules/slim-select/dist/slimselect.css';
 
 // Инициализация библиотеки Notiflix
 Notiflix.Notify.init({ position: 'right-bottom' });
@@ -12,7 +11,8 @@ Notiflix.Notify.init({ position: 'right-bottom' });
 // Обработчик выбора породы кота
 const breedSelect = new SlimSelect('.breed-select', {
   placeholder: 'Select a breed',
-}); // Используем селектор для выбора элемента
+});
+
 const loader = document.querySelector('.loader');
 const error = document.querySelector('.error');
 const catInfo = document.querySelector('.cat-info');
@@ -99,3 +99,7 @@ function showError() {
   error.style.display = 'block';
   Notiflix.Notify.failure('Oops! Something went wrong. Please try again.');
 }
+
+
+
+
