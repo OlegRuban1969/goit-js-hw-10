@@ -1,4 +1,4 @@
-import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
+import { fetchCatByBreed } from './cat-api.js';
 import Notiflix from 'notiflix';
 import './sass/_common.scss';
 import SlimSelect from 'slim-select';
