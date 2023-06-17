@@ -1,105 +1,72 @@
-import { fetchCatByBreed } from './cat-api.js';
-import Notiflix from 'notiflix';
+import './css/styles.css';
 import SlimSelect from 'slim-select';
-import 'notiflix/dist/notiflix-3.2.6.min.css';
-import 'modern-normalize/modern-normalize.css';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import '../node_modules/slim-select/dist/slimselect.css';
+import {
+  fetchBreeds,
+  renderBreeds,
+  fetchCatByBreed,
+  renderCat,
+} from './js/cat-api';
 
-// Инициализация библиотеки Notiflix
-Notiflix.Notify.init({ position: 'right-bottom' });
+// Доступ к контейнеру, содержащему выбор породы кошки.
+const selectContainerEl = document.querySelector('.select-container');
+// Доступ к выпадающему списку выбора породы кошки.
+const selectEl = document.querySelector('#selectElement');
+// Доступ к контейнеру, где будет отображаться информация о кошке.
+const catInfoEl = document.querySelector('.cat-info');
 
-// Обработчик выбора породы кота
-const breedSelect = new SlimSelect('.breed-select', {
-  placeholder: 'Select a breed',
-});
-
-const loader = document.querySelector('.loader');
-const error = document.querySelector('.error');
-const catInfo = document.querySelector('.cat-info');
-
-breedSelect.onChange = function(item) {
-  const breedId = item.value();
-  showLoader();
-
-  fetchCatByBreed(breedId)
-    .then(cat => {
-      hideLoader();
-      showCatInfo(cat);
-    })
-    .catch(error => {
-      hideLoader();
-      console.error('Ошибка:', error);
-      showError();
-    });
-};
-
-// Загрузка коллекции пород при загрузке страницы
-window.addEventListener('DOMContentLoaded', () => {
-  showLoader();
-
-  fetchBreeds()
-    .then(breeds => {
-      hideLoader();
-      populateBreedsSelect(breeds);
-    })
-    .catch(error => {
-      hideLoader();
-      console.error('Ошибка:', error);
-      showError();
-    });
-});
-
-// Заполняет селект опциями пород
-function populateBreedsSelect(breeds) {
-  breeds.forEach(breed => {
-    breedSelect.slim.add(breed.name, breed.id);
+// Отображение ошибки
+function showError(error) {
+  console.log(error);
+  selectContainerEl.classList.add('js-visually-hidden');// Добавляем класс для скрытия контейнера с выбором
+  Notify.failure(`Oops! Something went wrong! Try reloading the page!`, { // Отображаем уведомление об ошибке
+    position: 'center-center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    clickToClose: true,
+    timeout: 10000,
+    width: '260px',
   });
-  breedSelect.slim.setData();
 }
 
-// Показывает загрузчик
-function showLoader() {
-  loader.style.display = 'block';
-  loader.classList.add('lds-dual-ring');
-}
-
-// Скрывает загрузчик
-function hideLoader() {
-  loader.style.display = 'none';
-  loader.classList.remove('lds-dual-ring');
-}
-
-// Показывает информацию о коте
-function showCatInfo(cat) {
-  const breedName = cat[0].breeds[0].name;
-  const description = cat[0].breeds[0].description;
-  const temperament = cat[0].breeds[0].temperament;
-
-  const catImage = document.createElement('img');
-  catImage.src = cat[0].url;
-
-  const breedNameElement = document.createElement('p');
-  breedNameElement.textContent = `Breed: ${breedName}`;
-
-  const descriptionElement = document.createElement('p');
-  descriptionElement.textContent = `Description: ${description}`;
-
-  const temperamentElement = document.createElement('p');
-  temperamentElement.textContent = `Temperament: ${temperament}`;
-
-  catInfo.innerHTML = '';
-  catInfo.appendChild(catImage);
-  catInfo.appendChild(breedNameElement);
-  catInfo.appendChild(descriptionElement);
-  catInfo.appendChild(temperamentElement);
-}
-
-// Показывает ошибку
-function showError() {
-  error.style.display = 'block';
-  Notiflix.Notify.failure('Oops! Something went wrong. Please try again.');
-}
-
-
-
+// Получение списка пород кошек
+fetchBreeds()
+  .then(data => {
+    // Вставляем HTML-код списка пород в элемент selectEl
+    selectEl.insertAdjacentHTML('beforeend', renderBreeds(data));
+    // Удаляем класс "js-visually-hidden" у элемента selectContainerEl, чтобы отобразить контейнер выбора породы
+    selectContainerEl.classList.remove('js-visually-hidden');
+    // Создаем новый экземпляр SlimSelect для выпадающего списка
+    new SlimSelect({
+      select: '#selectElement',
+      settings: {
+        allowDeselect: true,
+        placeholderText: `Select cat's breed ...`,
+      },
+      events: {
+        // При изменении выбранного значения
+        afterChange: newVal => {
+          // Очищаем содержимое элемента catInfoEl
+          catInfoEl.innerHTML = '';
+          // Если выбрано новое значение
+          if (newVal.length !== 0) {
+            // Получаем информацию о кошке по выбранной породе
+            fetchCatByBreed(newVal[0].value)
+              .then(data => {
+                // Отображаем информацию о кошке в элементе catInfoEl
+                catInfoEl.innerHTML = renderCat(data);
+              })
+              .catch(err => {
+                // В случае ошибки отображаем сообщение об ошибке
+                showError(err);
+              });
+          }
+        },
+      },
+    });
+  })
+  .catch(err => {
+    // В случае ошибки отображаем сообщение об ошибке
+    showError(err);
+  });
 

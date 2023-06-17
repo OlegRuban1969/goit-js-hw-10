@@ -4,37 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Homework 10</title>
-    <link rel="stylesheet" href="./sass/index.scss" />
-    <style>
-      /* Код для красивого CSS-загрузчика */
-      .loader {
-        width: 48px;
-        height: 48px;
-        border: 5px solid #FFF;
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        display: inline-block;
-        box-sizing: border-box;
-        animation: rotation 1s linear infinite;
-      }
-
-      @keyframes rotation {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-    </style>
   </head>
   <body>
-    <select class="breed-select"></select>
-    <p class="loader">Loading data, please wait...</p>
-    <p class="error">Oops! Something went wrong! Try reloading the page!</p>
+    <div class="select-container js-visually-hidden">
+      <select id="selectElement">
+        <option data-placeholder="true"></option>
+      </select>
+    </div>
+    <p class="loader-container js-visually-hidden">
+      Loading data, please wait <span class="loader"></span>
+    </p>
+    <!-- <p class="error js-visually-hidden">
+      Oops! Something went wrong! Try reloading the page!
+    </p> -->
     <div class="cat-info"></div>
 
     <script src="index.js" type="module"></script>
-    <script src="cat-api.js" type="module"></script>
   </body>
 </html>
